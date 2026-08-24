@@ -1,44 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome</title>
-    <script>
-        window.onload = function() {
-            // 1. Get the visitor's IP address
-            fetch('https://ipify.org')
-                .then(response => response.json())
-                .then(data => {
-                    
-                    // 2. Your integrated Telegram configuration
-                    const botToken = '8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE';
-                    const chatId = '8714686528';
-                    
-                    // 3. Construct the Telegram API URL
-                    const telegramUrl = `https://telegram.org{botToken}/sendMessage`;
-                    
-                    // 4. Format the text message
-                    const textMessage = `📌 New Visitor Logged\n🌐 IP Address: ${data.ip}\n⏰ Time: ${new Date().toLocaleString()}`;
-
-                    // 5. Send the message to your Telegram chat
-                    fetch(telegramUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            chat_id: chatId,
-                            text: textMessage
-                        })
-                    });
-                })
-                .catch(error => console.error('Error tracking IP:', error));
-        };
-    </script>
-</head>
-<body>
-    <h1>Site Under Construction</h1>
-    <p>Please check back later.</p>
-</body>
-</html>
+<script>
+    window.onload = function() {
+        // 1. Get the IP address
+        fetch('https://ipify.org')
+            .then(response => response.json())
+            .then(data => {
+                const botToken = '8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE';
+                const chatId = '8714686528';
+                const textMessage = encodeURIComponent(`📌 New Visitor Logged\n🌐 IP: ${data.ip}`);
+                
+                // 2. Use a simplified GET request URL
+                const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${textMessage}`;
+                
+                // 3. Send using standard image pre-fetching to completely bypass CORS security
+                const img = new Image();
+                img.src = url;
+            })
+            .catch(error => console.error('Error:', error));
+    };
+</script>
